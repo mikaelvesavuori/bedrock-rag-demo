@@ -10,7 +10,7 @@ I hope this repo will make this technique easier to understand and implement for
 
 ## Solution
 
-TODO: Make Excalidraw diagram
+![Diagram](./diagram.png)
 
 ## Prerequisites
 
