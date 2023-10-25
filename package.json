@@ -5,13 +5,14 @@
   "author": "Mikael Vesavuori",
   "license": "MIT",
   "keywords": [
-    "serverless",
-    "typescript",
     "rag",
     "ai",
     "aws",
+    "amazon",
     "bedrock",
-    "document-chat"
+    "document-chat",
+    "serverless",
+    "typescript"
   ],
   "scripts": {
     "start": "npx sls offline --reloadHandler",

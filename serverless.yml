@@ -38,12 +38,11 @@ custom:
   openSearchIndex: documents
   openSearchUrl: https://random.region.aoss.amazonaws.com # SET THIS VALUE
 
-
 functions:
   Chunk:
     handler: src/handlers/chunk.handler
     description: Chunk documents
-    timeout: 60
+    timeout: 30
     events:
       - s3:
           bucket: ${self:custom.documentsBucketName}
@@ -74,7 +73,7 @@ functions:
   GenerateEmbeddings:
     handler: src/handlers/embed.handler
     description: Generate embeddings for uploaded documents
-    timeout: 60
+    timeout: 30
     events:
       - sqs:
           arn: ${self:custom.documentsEmbeddingsQueueArn}
@@ -95,7 +94,7 @@ functions:
   Ask:
     handler: src/handlers/ask.handler
     description: Ask the LLM a question
-    timeout: 29
+    timeout: 29 # Under 30 seconds because of API Gateway max duration
     events:
       - httpApi:
           method: GET
@@ -110,4 +109,3 @@ functions:
       REGION: ${aws:region}
       OPENSEARCH_INDEX: ${self:custom.openSearchIndex}
       OPENSEARCH_URL: ${self:custom.openSearchUrl}
-

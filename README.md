@@ -23,11 +23,7 @@ I hope this repo will make this technique easier to understand and implement for
 In the AWS console:
 
 - Go to the Bedrock page and enable any models you want to use. We will use Jurassic-2 Ultra and Amazon Titan Text Embeddings.
-- Create an SQS queue (?).
-  - Make note of the bucket name; you will update the infrastructure configuration soon.
-- Create an S3 bucket to put your files in.
-  - Create a folder in the bucket named `documents`.
-  - Make note of the bucket name; you will update the infrastructure configuration soon.
+- Create an SQS queue named `document-chat-demo-embeddings` with standard settings.
 - Create an OpenSearch Serverless collection using the "Vector search" and "Easy create" options. This will take a few minutes to start up.
 - Under `Collections`, select your collection, go into the `Indexes` tab and create a vector index.
   - Select the "JSON" option and paste the contents from `opensearch-index.json` into the text field.
@@ -36,7 +32,7 @@ In the AWS console:
 
 In `serverless.yml`:
 
-- Update the values at `custom.awsAccountNumber`, `custom.documentsBucketName`, and `custom.openSearchUrl` to your values
+- Update the values at `custom.awsAccountNumber`, `custom.documentsBucketName` (your choice of random name), and `custom.openSearchUrl` to your values
 
 In your IDE/CLI:
 
@@ -65,11 +61,11 @@ You will need documents for this to use your "own data".
 
 ### Adding documents
 
-In the current implementation, the infrastructure allows for S3 events for both PDF and TXT files. However, the actual chunking function will only currently do work on TXT files. Feel free to extend this with PDF parsing and whatever you might need.
+In the current implementation, the infrastructure allows for S3 events to be emitted for either PDF and TXT files being added to a `documents` folder in your bucket (create this if you haven't already).
 
-There is a TXT and a PDF file with the essentially the same content, located in the `data` directory.
+However, **the actual chunking function will only currently do anything with `TXT` files**. Feel free to extend this with PDF parsing and whatever you might need. It's not too complicated, and this repo is about showing the principles in a working minimal way, so I've not felt any need to over-invest here and now.
 
-To start the process of embedding vectors on document data, simply upload one of the documents
+To start the process of embedding vectors on document data, simply upload one of the provided documents (or any other such document). There is a TXT and a PDF file with the essentially the same content, located in the `data` directory.
 
 ### Asking questions
 

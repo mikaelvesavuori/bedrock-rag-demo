@@ -73,7 +73,7 @@ async function getContext(openSearchClient: Client, index: string, questionEmbed
  * @description Pass a well-formed prompt to Bedrock.
  */
 async function askQuestion(context: string, question: string) {
-  const prompt = `Context:\n\n"""${context}"""\n\nBased on the above context, please answer the question: "${question}".`;
+  const prompt = `Context:\n\n"""${context}"""\n\nBased on the above context, please answer the question. Answer:\n\n"""${question}"""`;
   console.log('Prompt: ', prompt);
 
   const answer = await invokeBedrock(prompt);
