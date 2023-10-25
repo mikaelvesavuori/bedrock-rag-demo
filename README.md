@@ -78,7 +78,7 @@ The endpoint takes a GET request with a URL-encoded string. If you don't know ho
 For the question "What does Mikael say about dumb, predictable code?", the call would be:
 
 ```bash
-curl https://RANDOM_ID.execute-api.REGION.amazonaws.com/\?ask\=What%20does\&What%20does%20Mikael%20say%20about%20dumb%2C%20predictable%20code%3F
+curl https://RANDOM_ID.execute-api.REGION.amazonaws.com/\?ask\=What%20does%20Mikael%20say%20about%20dumb%2C%20predictable%20code%3F
 ```
 
 This will respond back with the LLM's answer in a few seconds.

@@ -38,6 +38,7 @@ custom:
   openSearchIndex: documents
   openSearchUrl: https://random.region.aoss.amazonaws.com # SET THIS VALUE
 
+
 functions:
   Chunk:
     handler: src/handlers/chunk.handler

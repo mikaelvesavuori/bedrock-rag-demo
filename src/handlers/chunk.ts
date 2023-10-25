@@ -44,17 +44,17 @@ async function chunk(records: Record<string, any>) {
     return getFileChunks(content);
   });
 
-  const objectChunks = await Promise.all(chunkPromises); // Array of arrays with strings
+  // Put messages on queue for each individual chunk
+  const promises = await Promise.all(chunkPromises).then(async (chunks: string[][]) =>
+    chunks
+      .flat()
+      .map(
+        async (chunk: string) =>
+          await putOnQueue({ data: chunk, region, awsAccountNumber, queueName })
+      )
+  );
 
-  // Put chunks in queue
-  const queuePromises = objectChunks.map(async (chunks: string[]) => {
-    chunks.map(
-      async (chunk: string) =>
-        await putOnQueue({ object: chunk, region, awsAccountNumber, queueName })
-    );
-  });
-
-  await Promise.all(queuePromises);
+  await Promise.all(promises);
 }
 
 /**
@@ -70,11 +70,11 @@ async function getFileContent(object: any) {
  */
 function getFileChunks(content: string) {
   const chunks = llmchunk.chunk(content, {
-    minLength: 0,
+    minLength: 1,
     maxLength: 1000,
     splitter: 'paragraph',
-    overlap: 50,
-    delimiters: ''
+    overlap: 20,
+    delimiters: '\n'
   });
 
   console.log(`Produced ${chunks.length} chunks`);
