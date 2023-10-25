@@ -1,0 +1,50 @@
+{
+  "name": "bedrock-rag-demo",
+  "version": "1.0.0",
+  "description": "RAG document chat with Amazon Bedrock using Typescript on Lambda",
+  "author": "Mikael Vesavuori",
+  "license": "MIT",
+  "keywords": [
+    "serverless",
+    "typescript",
+    "rag",
+    "ai",
+    "aws",
+    "bedrock",
+    "document-chat"
+  ],
+  "scripts": {
+    "start": "npx sls offline --reloadHandler",
+    "build": "npx sls package",
+    "deploy": "npx sls deploy",
+    "teardown": "npx sls remove"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "3",
+    "@aws-sdk/client-opensearchserverless": "3",
+    "@aws-sdk/client-s3": "3",
+    "@aws-sdk/client-sqs": "3",
+    "@opensearch-project/opensearch": "^2.4.0",
+    "aws4": "^1.12.0",
+    "langchain": "^0.0.165",
+    "llm-chunk": "^0.0.1"
+  },
+  "devDependencies": {
+    "@ava/typescript": "4",
+    "@types/aws-lambda": "8",
+    "@types/aws4": "1",
+    "@types/node": "20",
+    "@typescript-eslint/eslint-plugin": "6",
+    "@typescript-eslint/parser": "6",
+    "eslint": "8",
+    "eslint-config-prettier": "9",
+    "eslint-plugin-prettier": "5",
+    "prettier": "3",
+    "serverless": "3",
+    "serverless-esbuild": "1",
+    "serverless-iam-roles-per-function": "3",
+    "serverless-offline": "12",
+    "ts-node": "10",
+    "typescript": "5"
+  }
+}

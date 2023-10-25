@@ -1,0 +1,112 @@
+service: document-chat-demo
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  architecture: arm64
+  stage: ${opt:stage, 'prod'}
+  region: ${opt:region, 'us-east-1'} # Bedrock is only available in select regions; also, other regions may have different models available
+  memorySize: ${opt:memory, 1024}
+  logRetentionInDays: 7
+  versionFunctions: false
+  deploymentBucket:
+    blockPublicAccess: true
+    maxPreviousDeploymentArtifacts: 5
+    serverSideEncryption: AES256
+  stackTags:
+    Usage: ${self:service}
+  tags:
+    Usage: ${self:service}
+  apiGateway:
+    minimumCompressionSize: 1024
+
+plugins:
+  - serverless-esbuild
+  - serverless-offline
+  - serverless-iam-roles-per-function
+
+package:
+  individually: true
+
+custom:
+  awsAccountNumber: 123412341234 # SET THIS VALUE
+  documentsBucketArn: arn:aws:s3:::${self:custom.documentsBucketName}
+  documentsBucketName: ${self:service}-some-random-value # SET THIS VALUE
+  documentsBucketPrefix: documents/
+  documentsEmbeddingsQueueArn: arn:aws:sqs:${aws:region}:${self:custom.awsAccountNumber}:${self:custom.documentsEmbeddingsQueueName}
+  documentsEmbeddingsQueueName: ${self:service}-embeddings
+  openSearchIndex: documents
+  openSearchUrl: https://random.region.aoss.amazonaws.com # SET THIS VALUE
+
+functions:
+  Chunk:
+    handler: src/handlers/chunk.handler
+    description: Chunk documents
+    timeout: 60
+    events:
+      - s3:
+          bucket: ${self:custom.documentsBucketName}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: ${self:custom.documentsBucketPrefix}
+            - suffix: .txt
+      - s3:
+          bucket: ${self:custom.documentsBucketName}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: ${self:custom.documentsBucketPrefix}
+            - suffix: .pdf
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - sqs:SendMessage
+        Resource: ${self:custom.documentsEmbeddingsQueueArn}
+      - Effect: "Allow"
+        Action:
+          - s3:GetObject
+        Resource: "${self:custom.documentsBucketArn}/*"
+    environment:
+      AWS_ACCOUNT_NUMBER: ${self:custom.awsAccountNumber}
+      REGION: ${aws:region}
+      QUEUE_NAME: ${self:custom.documentsEmbeddingsQueueName}
+
+  GenerateEmbeddings:
+    handler: src/handlers/embed.handler
+    description: Generate embeddings for uploaded documents
+    timeout: 60
+    events:
+      - sqs:
+          arn: ${self:custom.documentsEmbeddingsQueueArn}
+          batchSize: 10
+          maximumBatchingWindow: 10
+          functionResponseType: ReportBatchItemFailures
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - aoss:*
+          - bedrock:InvokeModel
+        Resource: "*"
+    environment:
+      REGION: ${aws:region}
+      OPENSEARCH_INDEX: ${self:custom.openSearchIndex}
+      OPENSEARCH_URL: ${self:custom.openSearchUrl}
+
+  Ask:
+    handler: src/handlers/ask.handler
+    description: Ask the LLM a question
+    timeout: 29
+    events:
+      - httpApi:
+          method: GET
+          path: /
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - aoss:*
+          - bedrock:InvokeModel
+        Resource: "*"
+    environment:
+      REGION: ${aws:region}
+      OPENSEARCH_INDEX: ${self:custom.openSearchIndex}
+      OPENSEARCH_URL: ${self:custom.openSearchUrl}
+
