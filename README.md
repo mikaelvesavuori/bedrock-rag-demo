@@ -65,7 +65,7 @@ In the current implementation, the infrastructure allows for S3 events to be emi
 
 However, **the actual chunking function will only currently do anything with `TXT` files**. Feel free to extend this with PDF parsing and whatever you might need. It's not too complicated, and this repo is about showing the principles in a working minimal way, so I've not felt any need to over-invest here and now.
 
-To start the process of embedding vectors on document data, simply upload one of the provided documents (or any other such document). There is a TXT and a PDF file with the essentially the same content, located in the `data` directory.
+To start the process of embedding vectors on document data, simply upload one of the provided documents (or any other such document) to your buckets `documents` folder. There is a TXT and a PDF file, with essentially the same content, located in the `data` directory.
 
 ### Asking questions
 
